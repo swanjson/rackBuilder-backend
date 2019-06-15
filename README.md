@@ -99,8 +99,8 @@ MongoClient.connect('link-to-mongodb', (err, database) => {
   // ... start the server
 })
 ```
-
-
+My server URL
+`mongodb+srv://admin:<password>@myfirstapi-voqb6.mongodb.net/test?retryWrites=true&w=majority`
 
 ```javascript
 

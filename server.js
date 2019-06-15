@@ -16,6 +16,14 @@ MongoClient.connect('mongodb+srv://admin2:stinkydif@myfirstapi-voqb6.mongodb.net
 	})
 })
 
+app.post('/quotes', (req, res) =>{
+	db.collection('quotes').save(req.body, (err,result) => {
+		if (err) return console.log(err)
+
+		console.log('saved to database')
+		res.redirect('/')
+	})
+})
 
 /* Listening on server
 app.listen(3001, function() {
