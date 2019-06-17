@@ -3,12 +3,14 @@ const bodyParser = require('body-parser')
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
 var db;
+var databaseUrl = 'mongodb+srv://admin2:stinkydif@myfirstapi-voqb6.mongodb.net/test?retryWrites=true&w=majority'
 
 app.use(bodyParser.urlencoded({extended: true}))
+app.set('view engine', 'ejs')
 
-//console.log('Node and server is working!')
 
-MongoClient.connect('mongodb+srv://admin2:stinkydif@myfirstapi-voqb6.mongodb.net/test?retryWrites=true&w=majority', (err, database) => {
+
+MongoClient.connect(databaseUrl, (err, client) => {
 	if (err) return console.log(err)
 	db = client.db('myFirstApi')
 	app.listen(3001, () => {
@@ -16,34 +18,53 @@ MongoClient.connect('mongodb+srv://admin2:stinkydif@myfirstapi-voqb6.mongodb.net
 	})
 })
 
+//When the html form is submitted it sends the results to the database and reports to the console that it was saved.
 app.post('/quotes', (req, res) =>{
 	db.collection('quotes').save(req.body, (err,result) => {
 		if (err) return console.log(err)
-
 		console.log('saved to database')
 		res.redirect('/')
 	})
 })
 
-/* Listening on server
+//Grabs all of the quotes from the database and sends them to the index.ejs file and sends the file to the webiste.
+app.get('/', (req, res) => {
+	db.collection('quotes').find().toArray((err,result) => {
+		if (err) return console.log(err)
+			//below renders the index.ejs file
+		res.render('index.ejs', {quotes:result})
+	})
+})
+
+/*
+//Logs something to the console
+console.log('Node and server is working!')
+*/
+
+/*
+//Creates the express server  and sets the port.
 app.listen(3001, function() {
   console.log('listening on 3001')
 })
 */
 
 
-app.get('/', (req, res) => {
-	res.sendFile(__dirname + '/index.html')
-})
-
-
-
+/*
+//sends the 'req' to the console which in this case is the quotes made
 app.post('/quotes', (req, res) => {
   console.log(req.body)
 })
+*/
 
+/*
+//sends 'index.html' as the response to the website
+app.get('/', (req, res) => {
+	res.sendFile(__dirname + '/index.html')
+})
+*/
 
-
-/*app.post('/quotes', (req, res) => {
+/*
+//sends the string 'Helloooo!' to the console after a post is made
+app.post('/quotes', (req, res) => {
   console.log('Hellooooooooooooooooo!')
 })*/

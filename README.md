@@ -1,7 +1,14 @@
 #Backend for rackBuilder 
 
+Questions/Todo:
+- need to find a way to pass private keys from another file.
+- ejs is a template engine but react is a js library for building UIs. They both allow dynamic html writing via hybrid code?
 
-
+used this tutorial: https://zellwk.com/blog/crud-express-mongodb/
+  - creates express server
+  - learnt to execute CREATE and READ operations
+  - learnt to save and read from MongoDB
+  - learnt to use a template engine like Embedded JS
 
 
 setup:
@@ -92,15 +99,82 @@ Installing MongoDB
 npm install mongodb --save
 ```
 
-```javascript
-const MongoClient = require('mongodb').MongoClient
 
-MongoClient.connect('link-to-mongodb', (err, database) => {
-  // ... start the server
-})
-```
+Now i need to establish the database connection and then establish the connection to the server when the database is connected.
+
 My server URL
 `mongodb+srv://admin:<password>@myfirstapi-voqb6.mongodb.net/test?retryWrites=true&w=majority`
+
+```javascript
+const MongoClient = require('mongodb').MongoClient;
+var databaseUrl = 'link-to-database';
+
+MongoClient.connect(databaseUrl, (err, client) => {
+  if (err) return console.log(err)
+  db = client.db('myFirstApi')
+  app.listen(3001, () => {
+    console.log('listening on 3001')
+  })
+})
+```
+
+Now time to display the quotes to the website, but html text can't be fed dynamically so we'll have to do it a different way. We're going to use a template engine to display the informations. This specific one is going to be Embedded JavaScript (ejs)
+
+These are the attempts to serve up the quotes:
+```javascript
+app.get('/', (req, res) => {
+  var cursor = db.collection('quotes').find()
+})
+
+db.collection('quotes').find().toArray(function(err, results) {
+  console.log(results)
+  // send HTML file populated with quotes here
+})
+```
+
+with ejs you can write JS code within `<%` and `%>` tags. Also output JS code if you use the `<%=` and `%>` tags.
+```ejs
+<ul class="quotes">
+  <% for(var i=0; i<quotes.length; i++) {%>
+    <li class="quote">
+      <span><%= quotes[i].name %></span>
+      <span><%= quotes[i].quote %></span>
+    </li>
+  <% } %>
+</ul>
+
+```
+
+Now we must also copy the form element from `index.html`. The new 'index.ejs' file:
+```ejs
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BACKEND HOMIE!!!</title>
+</head>
+<body>
+  This is the index HTML file! with posts.
+
+  <ul class="quotes">
+  <% for(var i=0; i<quotes.length; i++) {%>
+    <li class="quote">
+      <span><%= quotes[i].name %></span>
+      <span><%= quotes[i].quote %></span>
+    </li>
+  <% } %>
+</ul>
+
+ <form action="/quotes" method="POST">
+  <input type="text" placeholder="name" name="name">
+  <input type="text" placeholder="quote" name="quote">
+  <button type="submit">Submit</button>
+</form>
+</body>
+</html>
+```
+
+
 
 ```javascript
 
