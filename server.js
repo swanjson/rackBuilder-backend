@@ -1,15 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser')
-const app = express();
+const app = express(); //makes it so the varibale 'app' references the express server.
 const MongoClient = require('mongodb').MongoClient;
 var db;
 var databaseUrl = 'mongodb+srv://admin2:stinkydif@myfirstapi-voqb6.mongodb.net/test?retryWrites=true&w=majority'
 
 app.use(bodyParser.urlencoded({extended: true}))
-app.set('view engine', 'ejs')
+app.set('view engine', 'ejs') //allows use of embedded js template engine.
 
 
-
+//establishes the connection to the MongoDB i have setup.
 MongoClient.connect(databaseUrl, (err, client) => {
 	if (err) return console.log(err)
 	db = client.db('myFirstApi')
